@@ -258,6 +258,8 @@ const commands = [
     .setName('answer')
     .setDescription('Answer the active trivia question')
     .addStringOption(o => o.setName('answer').setDescription('Your answer').setRequired(true)),
+
+  // Interactive commands
   new SlashCommandBuilder()
     .setName('help')
     .setDescription('Get help with bot commands'),
@@ -550,7 +552,7 @@ client.on('interactionCreate', async (interaction) => {
           }, 30000);
           activeTrivia.set(channel.id, { ...q, timeout });
           await interaction.reply({ embeds: [new EmbedBuilder().setColor('#9b59b6').setTitle('🧠 Football Trivia!')
-            .setDescription(q.question).setFooter({ text: 'Use /answer — You have 30 seconds!' }).setTimestamp()] });
+            .setDescription(q.question).setFooter({ text: 'Answer in chat or use /answer — You have 30 seconds!' }).setTimestamp()] });
           return;
         }
         break;
@@ -585,7 +587,7 @@ client.on('interactionCreate', async (interaction) => {
             { name: 'Admin', value: '/setlogs, /setwelcome, /setlevelchannel, /setxp, /resetxp, /blacklistxp, /whitelistxp, /forcerole', inline: false },
             { name: 'User', value: '/level, /rank, /leaderboard, /ping, /serverinfo, /userinfo', inline: false },
             { name: 'Football', value: '/scores, /standings, /player, /trivia, /answer', inline: false },
-            { name: 'Other', value: '/help, /stats, /poll', inline: false }
+            { name: 'Interactive', value: '/help, /stats, /poll', inline: false }
           );
         await interaction.reply({ embeds: [helpEmbed] });
         return;
@@ -631,7 +633,7 @@ client.on('interactionCreate', async (interaction) => {
   logCommand(user, userRole, commandName, channel, timestamp, result);
 });
 
-// XP system
+// XP system and trivia answers
 client.on('messageCreate', async (message) => {
   if (message.author.bot) return;
 
@@ -656,7 +658,7 @@ client.on('messageCreate', async (message) => {
       // Wrong answer, increment total
       if (!triviaStats[userId]) triviaStats[userId] = { correct: 0, total: 0 };
       triviaStats[userId].total++;
-      // Don't reply to wrong answers to avoid spam
+      // Don't reply to avoid spam
     }
   }
 
